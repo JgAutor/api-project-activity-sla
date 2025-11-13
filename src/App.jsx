@@ -4,11 +4,13 @@ import "./App.css";
 function App() {
   const [pokemon, setPokemon] = useState(null);
   const [erro, setErro] = useState(null);
+  const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
     async function buscarPokemon() {
       try {
-        const resposta = await fetch("https://pokeapi.co/api/v2/pokemon/461");
+        setCarregando(true);
+        const resposta = await fetch("https://pokeapi.co/api/v2/pokemon/1000");
         if (!resposta.ok) {
           throw new Error("Pokémon não encontrado");
         }
@@ -43,6 +45,8 @@ function App() {
       } catch (error) {
         setErro(error.message);
         console.error("Erro:", error);
+      } finally {
+        setCarregando(false);
       }
     }
 
@@ -50,7 +54,7 @@ function App() {
   }, []);
 
   if (erro) return <p className="erro">Erro: {erro}</p>;
-  if (!pokemon) return <p className="carregando">Carregando Pokémon...</p>;
+  if (carregando) return <p className="carregando">Carregando Pokémon...</p>;
 
   return (
     <div className="container">
@@ -60,6 +64,8 @@ function App() {
         <h2 className="nome-pokemon">{pokemon.nome}</h2>
 
         <img
+          width={200}
+          height={200}
           src={pokemon.foto}
           alt={`Pokémon ${pokemon.nome}`}
           className="foto-pokemon"
